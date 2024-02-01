@@ -1,12 +1,12 @@
 {
-  "name": "script-buttons-pnpm",
+  "name": "script-buttons-plus",
   "displayName": "Script Buttons for pnpm/yarn/npm",
-  "publisher": "JackWaterfall",
+  "publisher": "jimbo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jwaterfall/script-buttons.git"
+    "url": "https://github.com/frontendniubility/script-buttons"
   },
-  "description": "",
+  "description": "Inspired by https://github.com/jwaterfall/script-buttons.git. it is upgrade from that.",
   "version": "1.1.2",
   "engines": {
     "vscode": "^1.86.0"
@@ -73,6 +73,7 @@
     "@types/vscode": "^1.86.0",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
+    "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.9",
     "eslint": "^8.56.0",
     "glob": "^10.3.10",

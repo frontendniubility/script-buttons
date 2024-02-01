@@ -10,9 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
   const terminals: { [name: string]: vscode.Terminal } = {};
   const cwd = getWorkspaceFolderPath();
   let config = vscode.workspace.getConfiguration('NodePackageManager');
-  // let enable = config.get('enable');
   let npmName = config.get<string>('name');
-  // config.update('thing', 'A', vscode.ConfigurationTarget.Global);
+  // config.update('name', 'A', vscode.ConfigurationTarget.Global);
 
   function addDisposable(disposable: Disposable) {
     context.subscriptions.push(disposable);
