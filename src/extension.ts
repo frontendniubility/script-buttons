@@ -9,6 +9,10 @@ export function activate(context: vscode.ExtensionContext) {
   const disposables: Disposable[] = [];
   const terminals: { [name: string]: vscode.Terminal } = {};
   const cwd = getWorkspaceFolderPath();
+  let config = vscode.workspace.getConfiguration('NodePackageManager');
+  // let enable = config.get('enable');
+  let npmName = config.get<string>('name');
+  // config.update('thing', 'A', vscode.ConfigurationTarget.Global);
 
   function addDisposable(disposable: Disposable) {
     context.subscriptions.push(disposable);
@@ -68,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   function createScriptButtonsAndCommands(scripts: Scripts, isNpm = false) {
     for (const name in scripts) {
-      const command = isNpm ? `npm run ${name}` : scripts[name];
+      const command = isNpm ? `${npmName} run ${name}` : scripts[name];
       const vscCommand = createVscCommand(command, name, isNpm);
 
       const color = isNpm ? 'white' : undefined;
@@ -77,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   function createVscCommand(command: string, name: string, isNpm = false) {
-    const vscCommand = `script-buttons.${isNpm && 'npm-'}${name.replace(' ', '')}`;
+    const vscCommand = `script-buttons.${isNpm && (npmName + '-')}${name.replace(' ', '')}`;
 
     const commandDisposable = vscode.commands.registerCommand(vscCommand, async () => {
       let terminal = terminals[vscCommand];
@@ -113,9 +117,9 @@ export function activate(context: vscode.ExtensionContext) {
       const packageJson = await getPackageJson();
       console.log('Loaded package.json!');
 
-      // npm install command
-      const vscCommand = createVscCommand('npm install', 'install', true);
-      createStatusBarItem('NPM Install', 'npm install', vscCommand, 'white');
+      // ${npmName} install command
+      const vscCommand = createVscCommand(`${npmName} install`, 'install', true);
+      createStatusBarItem('NPM Install', `${npmName} install`, vscCommand, 'white');
 
       createScriptButtonsAndCommands(packageJson.scripts, true);
       scripts = { ...scripts, ...packageJson.scripts };
@@ -152,4 +156,4 @@ export function activate(context: vscode.ExtensionContext) {
   init();
 }
 
-export function deactivate() {}
+export function deactivate() { }
