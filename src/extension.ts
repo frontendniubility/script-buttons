@@ -10,6 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   const terminals: { [name: string]: vscode.Terminal } = {};
   const cwd = getWorkspaceFolderPath();
   let config = vscode.workspace.getConfiguration('NodePackageManager');
+
   let npmName = config.get<string>('name');
   // config.update('name', 'A', vscode.ConfigurationTarget.Global);
 
@@ -118,7 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // ${npmName} install command
       const vscCommand = createVscCommand(`${npmName} install`, 'install', true);
-      createStatusBarItem('NPM Install', `${npmName} install`, vscCommand, 'white');
+      createStatusBarItem(`${npmName?.toUpperCase()} Install`, `${npmName} install`, vscCommand, 'white');
 
       createScriptButtonsAndCommands(packageJson.scripts, true);
       scripts = { ...scripts, ...packageJson.scripts };
