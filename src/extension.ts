@@ -2,7 +2,8 @@ import { promises as fsPromises } from 'fs';
 import vscode from 'vscode';
 import { workspace } from 'vscode';
 import { Disposable, PackageJson, Scripts } from './types';
-
+import fs from "fs";
+import path from "path";
 const { readFile } = fsPromises;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -12,6 +13,9 @@ export function activate(context: vscode.ExtensionContext) {
   let config = vscode.workspace.getConfiguration('NodePackageManager');
 
   let npmName = config.get<string>('name');
+  if (!npmName && npmName === 'auto') {
+    npmName = resolveAutoPackageManager();
+  }
   // config.update('name', 'A', vscode.ConfigurationTarget.Global);
 
   function addDisposable(disposable: Disposable) {
@@ -19,6 +23,23 @@ export function activate(context: vscode.ExtensionContext) {
     disposables.push(disposable);
   }
 
+  function resolveAutoPackageManager() {
+    const rootPath: string = vscode.workspace.rootPath || ".";
+
+    if (fs.existsSync(path.join(rootPath, "pnpm-lock.yaml"))) {
+      return "pnpm";
+    }
+
+    if (fs.existsSync(path.join(rootPath, "package-lock.json"))) {
+      return "npm";
+    }
+
+    if (fs.existsSync(path.join(rootPath, "yarn-lock.json"))) {
+      return "yarn";
+    }
+
+    return "pnpm";
+  }
   function cleanup() {
     disposables.forEach((disposable) => disposable.dispose());
   }
@@ -36,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     return item;
   }
 
-  function getWorkspaceFolderPath() {
+  function getWorkspaceFolderPath(): string | undefined {
     const workspaceFolder = workspace.workspaceFolders?.[0];
     const path = workspaceFolder?.uri.fsPath;
     return path;
