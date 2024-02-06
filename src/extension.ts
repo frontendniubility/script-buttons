@@ -10,36 +10,35 @@ export function activate(context: vscode.ExtensionContext) {
   const disposables: Disposable[] = [];
   const terminals: { [name: string]: vscode.Terminal } = {};
   const cwd = getWorkspaceFolderPath();
+
+  function resolveAutoPackageManager() {
+
+    if (fs.existsSync(path.join(cwd, "pnpm-lock.yaml"))) {
+      return "pnpm";
+    } else if (fs.existsSync(path.join(cwd, "package-lock.json"))) {
+      return "npm";
+    } else if (fs.existsSync(path.join(cwd, "yarn-lock.json"))) {
+      return "yarn";
+    } else
+      return "pnpm";
+  }
+
   let config = vscode.workspace.getConfiguration('NodePackageManager');
 
   let npmName = config.get<string>('name');
-  if (!npmName && npmName === 'auto') {
+  if (npmName?.toLowerCase().trim() == "auto") {
     npmName = resolveAutoPackageManager();
   }
+  npmName = resolveAutoPackageManager();
   // config.update('name', 'A', vscode.ConfigurationTarget.Global);
+
 
   function addDisposable(disposable: Disposable) {
     context.subscriptions.push(disposable);
     disposables.push(disposable);
   }
 
-  function resolveAutoPackageManager() {
-    const rootPath: string = vscode.workspace.rootPath || ".";
 
-    if (fs.existsSync(path.join(rootPath, "pnpm-lock.yaml"))) {
-      return "pnpm";
-    }
-
-    if (fs.existsSync(path.join(rootPath, "package-lock.json"))) {
-      return "npm";
-    }
-
-    if (fs.existsSync(path.join(rootPath, "yarn-lock.json"))) {
-      return "yarn";
-    }
-
-    return "pnpm";
-  }
   function cleanup() {
     disposables.forEach((disposable) => disposable.dispose());
   }
@@ -57,10 +56,10 @@ export function activate(context: vscode.ExtensionContext) {
     return item;
   }
 
-  function getWorkspaceFolderPath(): string | undefined {
+  function getWorkspaceFolderPath(): string {
     const workspaceFolder = workspace.workspaceFolders?.[0];
     const path = workspaceFolder?.uri.fsPath;
-    return path;
+    return path ?? ".";
   }
 
   async function getJsonFile<T>(path: string) {
