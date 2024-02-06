@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
   const terminals: { [name: string]: vscode.Terminal } = {};
   const cwd = getWorkspaceFolderPath();
 
-  function resolveAutoPackageManager() {
+  function resolveAutoPackageManager(): string {
 
     if (fs.existsSync(path.join(cwd, "pnpm-lock.yaml"))) {
       return "pnpm";
@@ -29,7 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
   if (npmName?.toLowerCase().trim() == "auto") {
     npmName = resolveAutoPackageManager();
   }
-  npmName = resolveAutoPackageManager();
   // config.update('name', 'A', vscode.ConfigurationTarget.Global);
 
 
